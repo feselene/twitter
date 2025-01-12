@@ -1,18 +1,15 @@
 const { Pool } = require('pg');
-
-// Load environment variables
 require('dotenv').config();
 
-// Initialize the PostgreSQL pool
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
-        rejectUnauthorized: false, // Render often uses self-signed certificates
+        rejectUnauthorized: false, // Required for Render's self-signed certificates
     },
 });
 
 pool.on('connect', () => {
-    console.log('Connected to the database');
+    console.log('Connected to PostgreSQL database');
 });
 
 pool.on('error', (err) => {

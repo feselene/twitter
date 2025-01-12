@@ -13,7 +13,7 @@ const SignupScreen = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     if (!email.includes('@')) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
@@ -27,8 +27,29 @@ const SignupScreen = () => {
       return;
     }
 
-    console.log('Signup Successful', { email, password });
-    Alert.alert('Success', 'You have signed up successfully!');
+    try {
+      // Send the signup request to the backend
+      const response = await fetch('http://10.0.2.2:5000/api/users/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Success', 'You have signed up successfully!');
+        console.log('Signup Successful:', data);
+      } else {
+        Alert.alert('Error', data.error || 'Something went wrong. Please try again.');
+        console.error('Signup Error:', data);
+      }
+    } catch (error) {
+      console.error('Network Error:', error);
+      Alert.alert('Error', 'Unable to connect to the server. Please try again later.');
+    }
   };
 
   return (

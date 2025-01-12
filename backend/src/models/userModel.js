@@ -1,8 +1,19 @@
-const pool = require('../config/db');
+const mongoose = require('mongoose');
 
-const createUser = async (username, email, password) => {
-    const query = 'INSERT INTO users (username, email, password) VALUES ($1, $2, $3)';
-    return pool.query(query, [username, email, password]);
-};
+const userSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+});
 
-module.exports = { createUser };
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;
