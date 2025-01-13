@@ -13,32 +13,33 @@ const SignupScreen = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignup = async () => {
-    if (!email.includes('@')) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address.');
-      return;
-    }
-    if (password.length < 6) {
-      Alert.alert('Weak Password', 'Password must be at least 6 characters.');
-      return;
-    }
-    if (password !== confirmPassword) {
-      Alert.alert('Passwords Do Not Match', 'Please re-enter your passwords.');
-      return;
-    }
+const handleSignup = async () => {
+  if (!email.includes('@')) {
+    Alert.alert('Invalid Email', 'Please enter a valid email address.');
+    return;
+  }
+  if (password.length < 6) {
+    Alert.alert('Weak Password', 'Password must be at least 6 characters.');
+    return;
+  }
+  if (password !== confirmPassword) {
+    Alert.alert('Passwords Do Not Match', 'Please re-enter your passwords.');
+    return;
+  }
 
-    try {
-      // Send the signup request to the backend
-      const response = await fetch('http://10.0.2.2:5000/api/users/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const response = await fetch('http://10.0.2.2:5000/api/users/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
+    // Check if the response is JSON or an error page (HTML)
+    const contentType = response.headers.get('Content-Type');
+    if (contentType && contentType.includes('application/json')) {
       const data = await response.json();
-
       if (response.ok) {
         Alert.alert('Success', 'You have signed up successfully!');
         console.log('Signup Successful:', data);
@@ -46,11 +47,18 @@ const SignupScreen = () => {
         Alert.alert('Error', data.error || 'Something went wrong. Please try again.');
         console.error('Signup Error:', data);
       }
-    } catch (error) {
-      console.error('Network Error:', error);
-      Alert.alert('Error', 'Unable to connect to the server. Please try again later.');
+    } else {
+      // Handle unexpected non-JSON responses
+      const errorText = await response.text(); // Log the raw response for debugging
+      console.error('Unexpected Response:', errorText);
+      Alert.alert('Error', 'Unexpected server response. Please try again later.');
     }
-  };
+  } catch (error) {
+    console.error('Network Error:', error);
+    Alert.alert('Error', 'Unable to connect to the server. Please try again later.');
+  }
+};
+
 
   return (
     <View style={styles.container}>
