@@ -7,11 +7,13 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const SignupScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const navigation = useNavigation();
 
 const handleSignup = async () => {
   if (!email.includes('@')) {
@@ -43,6 +45,7 @@ const handleSignup = async () => {
       if (response.ok) {
         Alert.alert('Success', 'You have signed up successfully!');
         console.log('Signup Successful:', data);
+        navigation.navigate('Home');
       } else {
         Alert.alert('Error', data.error || 'Something went wrong. Please try again.');
         console.error('Signup Error:', data);

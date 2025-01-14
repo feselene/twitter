@@ -8,10 +8,12 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigation = useNavigation();
 
   const handleLogin = async () => {
       if (!email.includes('@')) {
@@ -33,7 +35,7 @@ const LoginScreen = () => {
         // Handle successful login
         console.log('Login Successful', response.data);
         Alert.alert('Success', 'You have logged in successfully!');
-
+        navigation.navigate('Home');
         // Save the token if needed
         // const token = response.data.token;
       } catch (error) {
