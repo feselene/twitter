@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import {
   View,
   Text,
@@ -12,18 +13,37 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    if (!email.includes('@')) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address.');
-      return;
-    }
-    if (password.length < 6) {
-      Alert.alert('Invalid Password', 'Password must be at least 6 characters.');
-      return;
-    }
+  const handleLogin = async () => {
+      if (!email.includes('@')) {
+        Alert.alert('Invalid Email', 'Please enter a valid email address.');
+        return;
+      }
+      if (password.length < 6) {
+        Alert.alert('Invalid Password', 'Password must be at least 6 characters.');
+        return;
+      }
 
-    console.log('Login Successful', { email, password });
-    Alert.alert('Success', 'You have logged in successfully!');
+      try {
+        // Make API call to the login endpoint
+        const response = await axios.post('http://10.0.2.2:5000/api/users/login', {
+          email,
+          password,
+        });
+
+        // Handle successful login
+        console.log('Login Successful', response.data);
+        Alert.alert('Success', 'You have logged in successfully!');
+
+        // Save the token if needed
+        // const token = response.data.token;
+      } catch (error) {
+        // Handle errors
+        console.error('Login Failed', error.response?.data || error.message);
+        Alert.alert(
+          'Login Failed',
+          error.response?.data?.message || 'Something went wrong. Please try again.'
+        );
+      }
   };
 
   return (
