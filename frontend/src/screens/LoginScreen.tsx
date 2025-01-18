@@ -35,7 +35,7 @@ const LoginScreen = () => {
         // Handle successful login
         console.log('Login Successful', response.data);
         Alert.alert('Success', 'You have logged in successfully!');
-        navigation.navigate('Home');
+        navigation.navigate('Profile', { userId: 1 });
         // Save the token if needed
         // const token = response.data.token;
       } catch (error) {
