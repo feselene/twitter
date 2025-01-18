@@ -2,24 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 
-const handleLike = async (id: string) => {
-  try {
-    const response = await axios.post(`http://10.0.2.2:5000/api/tweets/${id}/like`);
-    console.log('Liked tweet:', response.data);
-  } catch (error) {
-    console.error('Error liking tweet:', error);
-  }
-};
-
-const handleRetweet = async (id: string) => {
-  try {
-    const response = await axios.post(`http://10.0.2.2:5000/api/tweets/${id}/retweet`);
-    console.log('Retweeted tweet:', response.data);
-  } catch (error) {
-    console.error('Error retweeting tweet:', error);
-  }
-};
-
 const HomeScreen = () => {
   const [tweets, setTweets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +21,40 @@ const HomeScreen = () => {
 
     fetchTweets();
   }, []);
+
+  // Function to handle like
+  const handleLike = async (id: string) => {
+    try {
+      const response = await axios.post(`http://10.0.2.2:5000/api/tweets/${id}/like`);
+      const updatedTweet = response.data;
+
+      // Update the tweets state with the new likes count
+      setTweets((prevTweets) =>
+        prevTweets.map((tweet) =>
+          tweet.id === updatedTweet.id ? { ...tweet, likes: updatedTweet.likes } : tweet
+        )
+      );
+    } catch (error) {
+      console.error('Error liking tweet:', error);
+    }
+  };
+
+  // Function to handle retweet
+  const handleRetweet = async (id: string) => {
+    try {
+      const response = await axios.post(`http://10.0.2.2:5000/api/tweets/${id}/retweet`);
+      const updatedTweet = response.data;
+
+      // Update the tweets state with the new retweets count
+      setTweets((prevTweets) =>
+        prevTweets.map((tweet) =>
+          tweet.id === updatedTweet.id ? { ...tweet, retweets: updatedTweet.retweets } : tweet
+        )
+      );
+    } catch (error) {
+      console.error('Error retweeting tweet:', error);
+    }
+  };
 
   const renderTweet = ({ item }: { item: typeof tweets[0] }) => (
     <View style={styles.tweetContainer}>
