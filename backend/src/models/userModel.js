@@ -16,15 +16,15 @@ const createUser = async (email, password) => {
     return rows[0];
 };
 
-const findUserByEmail = async (email) => {
+const findUserByUsername = async (username) => {
     const query = `
-        SELECT * FROM users WHERE email = $1;
+        SELECT * FROM users WHERE username = $1;
     `;
-    const { rows } = await pool.query(query, [email]);
+    const { rows } = await pool.query(query, [username]);
     return rows[0];
 };
 
 module.exports = {
     createUser,
-    findUserByEmail,
+    findUserByUsername,
 }

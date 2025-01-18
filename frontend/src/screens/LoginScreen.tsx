@@ -11,15 +11,11 @@ import {
 import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
 
   const handleLogin = async () => {
-      if (!email.includes('@')) {
-        Alert.alert('Invalid Email', 'Please enter a valid email address.');
-        return;
-      }
       if (password.length < 6) {
         Alert.alert('Invalid Password', 'Password must be at least 6 characters.');
         return;
@@ -28,7 +24,7 @@ const LoginScreen = () => {
       try {
         // Make API call to the login endpoint
         const response = await axios.post('http://10.0.2.2:5000/api/users/login', {
-          email,
+          username,
           password,
         });
 
@@ -53,10 +49,9 @@ const LoginScreen = () => {
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
         autoCapitalize="none"
       />
       <TextInput

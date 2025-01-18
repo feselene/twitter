@@ -1,24 +1,24 @@
-const { createUser, findUserByEmail } = require('../models/userModel');
+const { createUser, findUserByUsername } = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 // Signup user
 const signupUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required.' });
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required.' });
   }
 
   try {
-    // Check if the email already exists
-    const existingUser = await findUserByEmail(email);
+    // Check if the username already exists
+    const existingUser = await findUserByUsername(username);
     if (existingUser) {
-      return res.status(400).json({ message: 'Email already in use.' });
+      return res.status(400).json({ message: 'Username already in use.' });
     }
 
     // Create a new user
-    const user = await createUser(email, password);
+    const user = await createUser(username, password);
     res.status(201).json({ message: 'User created successfully!', user });
   } catch (error) {
     console.error(error);
@@ -28,15 +28,15 @@ const signupUser = async (req, res) => {
 
 // Login user
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required.' });
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required.' });
   }
 
   try {
-    // Find the user by email
-    const user = await findUserByEmail(email);
+    // Find the user by username
+    const user = await findUserByUsername(username);
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
