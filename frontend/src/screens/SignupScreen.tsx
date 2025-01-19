@@ -9,20 +9,63 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios'; // Ensure axios is installed and imported
 
 const SignupScreen = () => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigation = useNavigation();
 
   const handleSignup = async () => {
-    // Your signup logic here
+    if (!username.trim()) {
+      Alert.alert('Invalid Input', 'Username cannot be empty.');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Weak Password', 'Password must be at least 6 characters long.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Password Mismatch', 'Passwords do not match.');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://10.0.2.2:5000/api/users/signup', {
+        username,
+        email,
+        password,
+      });
+
+      if (response.status === 201) {
+        Alert.alert('Success', 'Account created successfully!');
+        navigation.navigate('Login'); // Navigate to the Login screen
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Something went wrong during signup.');
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Signup</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+      />
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -81,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loginText: {
-    color: '#1DA1F2'
+    color: '#1DA1F2',
   },
 });
 
