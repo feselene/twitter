@@ -16,7 +16,8 @@ const ProfileScreen = ({ route }: { route: any }) => {
     // Fetch user's profile data
     const fetchProfileData = async () => {
       try {
-        const response = await axios.get(`http://10.0.2.2:5000/api/profile/${userId}`);
+        const response = await axios.get(`http://10.0.2.2:5000/api/users/profile/${userId}`);
+        console.log('API response: ', response.data);
         setProfileData(response.data);
         setLoading(false);
       } catch (error) {

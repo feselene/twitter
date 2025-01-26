@@ -1,6 +1,7 @@
 const { createUser, findUserByUsername, findUserByEmail } = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const pool = require('../config/db');
 
 // Signup user
 const signupUser = async (req, res) => {
@@ -72,4 +73,35 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { signupUser, loginUser };
+const getUserProfile = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const result = await pool.query(`
+      SELECT
+        u.username,
+        (SELECT COUNT(*) FROM followers WHERE follower_id = u.id) AS followers,
+        (SELECT COUNT(*) FROM followers WHERE user_id = u.id) AS following,
+        ARRAY(
+          SELECT json_build_object('id', t.id, 'content', t.content, 'likes', t.likes, 'retweets', t.retweets)
+          FROM tweets t
+          WHERE t.username = u.username
+        ) AS tweets
+      FROM users u
+      WHERE u.id = $1;
+    `, [userId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+
+module.exports = { signupUser, loginUser, getUserProfile };

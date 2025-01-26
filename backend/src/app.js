@@ -13,8 +13,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/users', userRoutes);
-app.use('/api/tweets', tweetRoutes);
+app.use('/api/users', userRoutes);  // User-related routes
+app.use('/api/tweets', tweetRoutes); // Tweet-related routes
 
 // Start server
 const PORT = process.env.PORT || 5000;
