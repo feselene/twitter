@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import {
   View,
   Text,
@@ -7,23 +8,40 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigation = useNavigation();
 
-  const handleLogin = () => {
-    if (!email.includes('@')) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address.');
-      return;
-    }
-    if (password.length < 6) {
-      Alert.alert('Invalid Password', 'Password must be at least 6 characters.');
-      return;
-    }
+  const handleLogin = async () => {
+      if (password.length < 6) {
+        Alert.alert('Invalid Password', 'Password must be at least 6 characters.');
+        return;
+      }
 
-    console.log('Login Successful', { email, password });
-    Alert.alert('Success', 'You have logged in successfully!');
+      try {
+        // Make API call to the login endpoint
+        const response = await axios.post('http://10.0.2.2:5000/api/users/login', {
+          username,
+          password,
+        });
+
+        // Handle successful login
+        console.log('Login Successful', response.data);
+        Alert.alert('Success', 'You have logged in successfully!');
+        navigation.navigate('Profile', { userId: 13 });
+        // Save the token if needed
+        // const token = response.data.token;
+      } catch (error) {
+        // Handle errors
+        console.error('Login Failed', error.response?.data || error.message);
+        Alert.alert(
+          'Login Failed',
+          error.response?.data?.message || 'Something went wrong. Please try again.'
+        );
+      }
   };
 
   return (
@@ -31,10 +49,9 @@ const LoginScreen = () => {
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
         autoCapitalize="none"
       />
       <TextInput
